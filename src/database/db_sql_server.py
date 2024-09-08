@@ -14,9 +14,9 @@ class ItemDatabase:
         self.cursor = self.conn.cursor()
         
     def add_user(self, object):
-            query = f"insert into users( username, password) values ('{object.username}', '{object.password}')"
-            self.cursor.execute(query)
-            self.conn.commit()
+        query = "INSERT INTO users (username, password) VALUES (?, ?)"
+        self.cursor.execute(query, (object.username, object.password))
+        self.conn.commit()
         
     def get_user_by_username(self, username):
             query = "SELECT id, username, password FROM users WHERE username = ?"
