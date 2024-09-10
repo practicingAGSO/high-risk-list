@@ -20,7 +20,6 @@ def get_data_from_offshore_leaks(query):
     }
     
     elements = []
-    total = 0
 
     response = requests.get(url, headers=headers, params=params)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -35,14 +34,16 @@ def get_data_from_offshore_leaks(query):
         for row in rows:
             columns = row.find_all('td')
             data = [col.get_text(strip=True) for col in columns]
-            element = OffshoreElement(
-                entity=data[0],         
-                jurisdiction=data[1],      
-                linkedTo=data[2],        
-                dataFrom=data[3],      
-            )
-            elements.append(element)
+            if len(data) >= 4:
+                element = OffshoreElement(
+                    entity=data[0],         
+                    jurisdiction=data[1],      
+                    linkedTo=data[2],        
+                    dataFrom=data[3],      
+                )
+                elements.append(element)
     else:
+        print(soup)
         print("No se encontró ninguna tabla.")
     
     rsp = Response(total=len(elements), data=elements)

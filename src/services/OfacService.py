@@ -7,7 +7,6 @@ from src.models.ResponseModel import Response
 def get_data_from_sanctions_list(name): 
     url = 'https://sanctionssearch.ofac.treas.gov/Default.aspx'
     elements = []
-    total = 0
 
     # Payload para el POST request
     payload = {
@@ -45,22 +44,23 @@ def get_data_from_sanctions_list(name):
 
     if table:
         rows = table.find_all('tr')
-        total+=1
         
         for row in rows:
             cols = row.find_all('td')
             data = [col.get_text(strip=True) for col in cols]
-            element = OfacElement(
-                name=data[0],         
-                address=data[1],      
-                type=data[2],        
-                program=data[3],      
-                list=data[4],         
-                score=int(data[5])    
-            )
-            elements.append(element)
+            if len(data) >= 6:
+                element = OfacElement(
+                    name=data[0],         
+                    address=data[1],      
+                    type=data[2],        
+                    program=data[3],      
+                    list=data[4],         
+                    score=int(data[5])    
+                )
+                elements.append(element)
     else:
         print("No se encontró la tabla de resultados.")
+        print(soup)
     
     rsp = Response(total=len(elements), data=elements)
     return rsp
